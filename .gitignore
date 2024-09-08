@@ -1,0 +1,27 @@
+# Ignore .dfx and .mops directories in hopechain-engine
+hopechain-engine/.dfx/
+hopechain-engine/.mops/
+
+.dfx/
+.mops/
+.github/
+
+dfx_assets/
+build/
+
+canister_ids.json
+
+
+# Dependency directories
+node_modules/
+
+# Build directories
+/build
+/dist
+
+# Environment variables
+/.env
+
+# Editor/IDE specific files
+*.log
+.DS_Store
