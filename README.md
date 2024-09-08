@@ -1,4 +1,4 @@
-# HopeChain-Frontend
+# HopeChain
 This project aimed at leveraging the transparency and security of blockchain technology to support social groups such as drug addicts, children and other charitable organizations.The frontend is developed in React framework and connected with motoko backend (IC).
 
 ## Table of Contents
@@ -34,9 +34,9 @@ dfx -V
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/Tanzanode/hopechain-frontend.git
+git clone https://github.com/Tanzanode/hopechain.git
 
-cd hopechain-frontend
+cd hopechain
 ```
 2. Install dependencies:
 
