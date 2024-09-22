@@ -3,6 +3,7 @@ import Float "mo:base/Float";
 import Time "mo:base/Time";
 import Nat "mo:base/Nat";
 import Text "mo:base/Text";
+import Principal "mo:base/Principal";
 
 actor HopeChain {
 
@@ -18,13 +19,13 @@ actor HopeChain {
   // Define the User type with relevant fields
   type User = {
     id: UserID;
-    name: Text;
+    principal: Principal; // Changed from name to principal
   };
 
   // Define the Product type with relevant fields
   type Product = {
     id: ProductID;
-    sellerName: Text;
+    sellerPrincipal: Principal; // Changed from sellerName to sellerPrincipal
     productName: Text;
     shortDescription: Text;
     longDescription: Text;
@@ -45,30 +46,30 @@ actor HopeChain {
   stable var nextProductID: ProductID = 0;
 
   // Helper function to check if a user already exists
-  private func userExists(name: Text) : Bool {
+  private func userExists(principal: Principal) : Bool {
     Array.find<User>(users, func (user: User) : Bool {
-      user.name == name
+      user.principal == principal
     }) != null
   };
-  
+
   // Public functions to register new user
-  public func registerUser(name: Text) : async ?User {
-    if (userExists(name)) {
+  public func registerUser(principal: Principal) : async ?User {
+    if (userExists(principal)) {
       return null; // Return null if user already exists
     };
     let userID = nextUserID;
     let newUser: User = {
       id = userID;
-      name = name;
+      principal = principal; // Set the principal
     };
     users := Array.append<User>(users, [newUser]);
     nextUserID += 1;
     return ?newUser; // Return the new user
   };
 
-  public query func getUser(name: Text) : async ?User {
+  public query func getUser(principal: Principal) : async ?User {
     return Array.find<User>(users, func (user: User) : Bool {
-      user.name == name
+      user.principal == principal // Check against principal
     });
   };
 
@@ -159,7 +160,7 @@ actor HopeChain {
 
   // Function to add a product
   public func addProduct(
-    sellerName: Text,
+    sellerPrincipal: Principal, // Changed from sellerName to sellerPrincipal
     productName: Text,
     shortDescription: Text,
     longDescription: Text,
@@ -173,7 +174,7 @@ actor HopeChain {
     let productID = nextProductID;
     let newProduct: Product = {
       id = productID;
-      sellerName = sellerName;
+      sellerPrincipal = sellerPrincipal; // Set the sellerPrincipal
       productName = productName;
       shortDescription = shortDescription;
       longDescription = longDescription;
@@ -196,12 +197,11 @@ actor HopeChain {
   };
 
   // Function to get all products by a specific seller
-  public query func getProductsBySeller(sellerName: Text) : async [Product] {
-    let filteredProducts = Array.filter<Product>(products,func (p: Product) : Bool {
-      return p.sellerName == sellerName;
+  public query func getProductsBySeller(sellerPrincipal: Principal) : async [Product] {
+    let filteredProducts = Array.filter<Product>(products, func (p: Product) : Bool {
+      return p.sellerPrincipal == sellerPrincipal; // Check against sellerPrincipal
     });
     return filteredProducts;
   }
 
 }
-

@@ -1,5 +1,6 @@
 import { Actor, HttpAgent } from '@dfinity/agent';
 import { idlFactory as hopechain_engine_idl } from '../declarations/hopechain-engine-backend/hopechain-engine-backend.did.js';
+// import { Principal } from '@dfinity/principal';
 
 const agent = new HttpAgent({ host: "http://127.0.0.1:4943" });
 agent.fetchRootKey(); 
@@ -15,9 +16,21 @@ const hopechain_engine = Actor.createActor(hopechain_engine_idl, {
 
 console.log("Available methods:", Object.keys(hopechain_engine));
 
-export const registerUser = async (name) => {
+// Convert the current user's identity to a Principal
+// const getPrincipal = async () => {
+//   const identity = agent.identity;
+//   const principal = Principal.fromText(identity.getPrincipal().toText());
+//   return principal;
+// };
+
+export const registerUser = async () => {
   try {
-    const user = await hopechain_engine.registerUser(name);
+    const principal = localStorage.getItem('userPrincipal');
+    if (!principal) {
+      throw new Error('User not authenticated');
+    }
+
+    const user = await hopechain_engine.registerUser(principal);
     if (user) {
       console.log('User registered:', user);
       return user;
@@ -31,11 +44,15 @@ export const registerUser = async (name) => {
   }
 };
 
-export const getUser = async (name) => {
+export const getUser = async () => {
   try {
-    const user = await hopechain_engine.getUser(name);
+    const principal = localStorage.getItem('userPrincipal');
+    if (!principal) {
+      throw new Error('User not authenticated');
+    }
 
-    console.log('User from getUser:', user); 
+    const user = await hopechain_engine.getUser(principal);
+    console.log('User from getUser:', user);
 
     if (user) {
       return user;
@@ -48,5 +65,3 @@ export const getUser = async (name) => {
     throw error;
   }
 };
-
-
