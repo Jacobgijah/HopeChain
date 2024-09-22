@@ -3,6 +3,9 @@ module.exports = {
     ecmaVersion: 2020,
     sourceType: 'module'
   },
+  env: {
+    es2020: true,
+  },
   extends: [
     'react-app',
     'react-app/jest'

@@ -4,10 +4,6 @@
       "main": "hopechain-engine/src/hopechain-engine-backend/main.mo",
       "type": "motoko"
     },
-    "hopechain-engine": {
-      "main": "hopechain-engine/src/hopechain-engine-backend/main/main.mo",
-      "type": "motoko"
-    },
     "hopechain-frontend": {
       "type": "assets",
       "source": [
