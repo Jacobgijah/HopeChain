@@ -17,30 +17,47 @@ import kid_banner from './Components/Assets/banner_kids.png';
 import CharityProfile from './Pages/CharityProfile';
 import PrivacyPolicy from './Pages/PrivacyPolicy';
 import { ProductProvider } from './Context/ProductContext';
+import { AuthClient } from '@dfinity/auth-client';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userName, setUserName] = useState('');
+  const [userPrincipal, setUserPrincipal] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setIsAuthenticated(true);
-      setUserName(storedUser);
-    }
+    const checkAuthentication = async () => {
+      const authClient = await AuthClient.create();
+      if (await authClient.isAuthenticated()) {
+        const identity = authClient.getIdentity();
+        const principal = identity.getPrincipal().toText();
+        setIsAuthenticated(true);
+        setUserPrincipal(principal);
+      }
+    };
+    checkAuthentication();
   }, []);
 
-  const handleLogin = (name) => {
-    setIsAuthenticated(true);
-    setUserName(name);
-    localStorage.setItem('user', name);
+  const handleLogin = async () => {
+    const authClient = await AuthClient.create();
+    authClient.login({
+      identityProvider: 'https://identity.ic0.app/#authorize',
+      onSuccess: () => {
+        const identity = authClient.getIdentity();
+        const principal = identity.getPrincipal().toText();
+        setIsAuthenticated(true);
+        setUserPrincipal(principal);
+        localStorage.setItem('userPrincipal', principal);
+        navigate('/'); // Redirect to the home page
+      },
+    });
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    const authClient = await AuthClient.create();
+    await authClient.logout();
     setIsAuthenticated(false);
-    setUserName('');
-    localStorage.removeItem('user');
+    setUserPrincipal('');
+    localStorage.removeItem('userPrincipal');
     navigate('/login'); // Redirect to the login page
   };
 
@@ -49,7 +66,7 @@ function App() {
       <div>
         <Navbar
           isAuthenticated={isAuthenticated}
-          userName={userName}
+          userName={userPrincipal}
           onLogout={handleLogout}
         />
         <Routes>
@@ -63,8 +80,8 @@ function App() {
           <Route path='/cart' element={<Cart />} />
           <Route path='/login' element={<Login onLogin={handleLogin} />} />
           <Route path='/signup' element={<LoginSignup />} />
-          <Route path='/seller' element={<Seller userName={userName} />} />
-          <Route path='/sellerProfile' element={<SellerProfile userName={userName} />} />
+          <Route path='/seller' element={<Seller userName={userPrincipal} />} />
+          <Route path='/sellerProfile' element={<SellerProfile userName={userPrincipal} />} />
         </Routes>
         <Footer />
       </div>

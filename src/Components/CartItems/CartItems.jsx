@@ -3,7 +3,7 @@ import './CartItems.css';
 import { ShopContext } from '../../Context/ShopContext';
 import remove_icon from '../Assets/cart_cross_icon.png';
 import { deposit, getTotalCharityAmount } from '../../ic/productService';
-import Popup from './Popup'; // Import the Popup component
+import Popup from './Popup';
 import { useNavigate } from 'react-router-dom';
 
 const CartItems = () => {
@@ -12,9 +12,12 @@ const CartItems = () => {
   const [convertedTotal, setConvertedTotal] = useState(0);
   const [popupMessage, setPopupMessage] = useState('');
   const [showPopup, setShowPopup] = useState(false);
+  // eslint-disable-next-line
   const [charityAmount, setCharityAmount] = useState(0);
   const navigate = useNavigate();
-  const isAuthenticated = Boolean(localStorage.getItem('user')); // Check if the user is authenticated
+
+  // Check if the user is authenticated via Internet Identity
+  const isAuthenticated = Boolean(window.ic?.identity); // Check for Internet Identity
 
   const conversionRates = useMemo(() => ({
     USD: 1,
@@ -162,14 +165,7 @@ const CartItems = () => {
             <button onClick={handleProceedToPurchase}>PROCEED TO PURCHASE</button>
           </div>
           <div className="cartitems-promocode">
-            {/* <p>Charity Account Amount ({selectedPaymentMethod})</p>
-            <div className="cartitems-promobox">
-              <span>
-                {selectedPaymentMethod === "ICP"
-                  ? `${charityAmount.toFixed(2)} ICP`
-                  : `${(charityAmount / conversionRates["ICP"] * conversionRates[selectedPaymentMethod]).toFixed(2)} ${selectedPaymentMethod}`}
-              </span>
-            </div> */}
+            {/* Additional code can be added here */}
           </div>
         </div>
       )}
