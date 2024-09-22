@@ -62,7 +62,7 @@ function App() {
   };
 
   return (
-    <ProductProvider>
+    <ProductProvider userPrincipal={userPrincipal}> {/* Pass the userPrincipal */}
       <div>
         <Navbar
           isAuthenticated={isAuthenticated}

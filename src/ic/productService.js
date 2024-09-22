@@ -42,12 +42,15 @@ export const addProduct = async (product) => {
 };
 
 
-export const getProducts = async () => {
+export const getProducts = async (loggedInSellerPrincipal) => {
   try {
     const products = await product_actor.getProducts();
 
+    // Filter out products posted by the logged-in seller
+    const filteredProducts = products.filter(product => product.sellerPrincipal !== loggedInSellerPrincipal);
+
     // Convert Uint8Array back to a Base64 string for each product's image
-    const productsWithImages = await Promise.all(products.map(async (product) => {
+    const productsWithImages = await Promise.all(filteredProducts.map(async (product) => {
       const productImageBase64 = await convertUint8ArrayToBase64(product.productImage);
 
       return {
@@ -62,6 +65,7 @@ export const getProducts = async () => {
     throw error;
   }
 };
+
 
 // Helper function to convert Uint8Array to Base64
 const convertUint8ArrayToBase64 = (uint8Array) => {
