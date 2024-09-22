@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import './CSS/LoginSignup.css';
 import { useNavigate, Link } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faLock } from '@fortawesome/free-solid-svg-icons'; // Import your desired icon
 
 const Login = ({ onLogin }) => {
   // eslint-disable-next-line
@@ -18,7 +20,10 @@ const Login = ({ onLogin }) => {
   return (
     <div className='loginsignup'>
       <div className="loginsignup-container">
-        <h1>Log In</h1>
+        <h1>
+          <FontAwesomeIcon icon={faLock} style={{ marginRight: '8px' }} />
+          Authenticate
+        </h1>
         <button
           onClick={handleLogin}
           style={{
@@ -30,7 +35,7 @@ const Login = ({ onLogin }) => {
           Continue with Internet Identity
         </button>
         <p className="loginsignup-login">
-        <input
+          <input
             type="checkbox"
             name=''
             id=''

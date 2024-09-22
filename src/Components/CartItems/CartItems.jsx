@@ -12,6 +12,7 @@ const CartItems = () => {
   const [convertedTotal, setConvertedTotal] = useState(0);
   const [popupMessage, setPopupMessage] = useState('');
   const [showPopup, setShowPopup] = useState(false);
+  // eslint-disable-next-line
   const [charityAmount, setCharityAmount] = useState(0);
   const navigate = useNavigate();
 
