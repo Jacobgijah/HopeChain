@@ -5,9 +5,7 @@ import Breadcrum from '../Components/Breadcrums/Breadcrum';
 import ProductDisplay from '../Components/ProductDisplay/ProductDisplay';
 import DescriptionBox from '../Components/DescriptionBox/DescriptionBox';
 import RelatedProducts from '../Components/RelatedProducts/RelatedProducts';
-import JSBI from 'jsbi';
 import './CSS/Product.css';
-
 
 const Product = () => {
   const { allProducts } = useContext(ShopContext);
@@ -25,11 +23,12 @@ const Product = () => {
   console.log('Types of IDs in allProducts:', allProducts.map(product => typeof product.id));
 
   // Convert productId to bigint for comparison
-  const productIdBigInt = JSBI.BigInt(productId);
+  const productIdBigInt = BigInt(productId);
 
   // Ensure consistent type comparison
   const product = allProducts.find((e) => {
-    return JSBI.equal(JSBI.BigInt(e.id), productIdBigInt);
+    console.log(`Comparing ${e.id} with ${productIdBigInt}`);
+    return e.id === productIdBigInt;
   });
   console.log("Found Product: ", product);
 
