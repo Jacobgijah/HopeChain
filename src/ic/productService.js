@@ -1,4 +1,7 @@
 import { Actor, HttpAgent } from '@dfinity/agent';
+import { Principal } from '@dfinity/principal';
+
+
 import { idlFactory as hopechain_engine_idl } from '../declarations/hopechain-engine-backend/hopechain-engine-backend.did.js';
 
 const agent = new HttpAgent({ host: "http://127.0.0.1:4943" });
@@ -6,38 +9,79 @@ agent.fetchRootKey();
 
 const hopechain_engine_id = process.env.REACT_APP_HOPECHAIN_ENGINE_BACKEND_CANISTER_ID;
 
+
+if (!hopechain_engine_id) {
+  throw new Error("REACT_APP_HOPECHAIN_ENGINE_BACKEND_CANISTER_ID is not defined");
+}
+
 const product_actor = Actor.createActor(hopechain_engine_idl, {
   agent,
   canisterId: hopechain_engine_id,
 });
 
-export const addProduct = async (product) => {
+
+// Function to convert a base64 string to a Uint8Array
+const base64ToUint8Array = (base64) => {
+  const binaryString = window.atob(base64.split(',')[1]); // Decode base64 string
+  const len = binaryString.length;
+  const bytes = new Uint8Array(len);
+
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binaryString.charCodeAt(i); // Convert to byte
+  }
+  
+  return bytes;
+};
+
+// Function to add a product
+export const addProduct = async (newProduct) => {
   try {
-    const { sellerName, productName, shortDescription, longDescription, price, currency, category, productImage, inventory, dateAdded } = product;
+    console.log("New Product:", newProduct); // Log the new product object
     
-    // Convert the productImage (base64) to Blob format before sending it
-    const response = await fetch(productImage);
-    const imageBlob = await response.blob();
+    const sellerPrincipalString = newProduct.sellerName; // Use sellerName
+    console.log("Seller Principal String:", sellerPrincipalString);
+
+    if (!sellerPrincipalString) {
+      throw new Error("Seller principal is undefined");
+    }
+
+    // Convert sellerPrincipal to Principal type
+    const sellerPrincipal = Principal.fromText(sellerPrincipalString);
     
-    // Convert Blob to ArrayBuffer and then to Uint8Array
-    const arrayBuffer = await imageBlob.arrayBuffer();
-    const uint8Array = new Uint8Array(arrayBuffer);
+    // Destructure product details from newProduct
+    const { productName, shortDescription, longDescription, price, currency, category, productImage, inventory, dateAdded } = newProduct;
+
+    // Convert price and inventory to correct types
+    const numericPrice = parseFloat(price); // Convert price to float
+    const numericInventory = parseInt(inventory, 10); // Convert inventory to integer
+
+    if (isNaN(numericPrice)) {
+      throw new Error(`Invalid price value: ${price}`);
+    }
     
-    await product_actor.addProduct(
-      sellerName,
+    if (isNaN(numericInventory)) {
+      throw new Error(`Invalid inventory value: ${inventory}`);
+    }
+
+    // Convert productImage to Uint8Array
+    const productImageBytes = base64ToUint8Array(productImage);
+
+    // Call the Motoko method
+    return await product_actor.addProduct(
+      sellerPrincipal,
       productName,
       shortDescription,
       longDescription,
-      parseFloat(price),
+      numericPrice, // Use numericPrice
       currency,
       category,
-      uint8Array,  // Pass Uint8Array instead of Blob
-      parseInt(inventory),
-      dateAdded,
+      productImageBytes, // Use the converted Uint8Array
+      numericInventory, // Use numericInventory
+      dateAdded
     );
   } catch (error) {
-    console.error('Error adding product:', error);
-    throw error;
+    console.error("Error adding product:", error);
+    throw error; // Rethrow the error for the caller to handle
   }
 };
 
@@ -67,6 +111,31 @@ export const getProducts = async (loggedInSellerPrincipal) => {
 };
 
 
+export const getProductsBySeller = async (sellerPrincipal) => {
+  try {
+    // Convert sellerPrincipal string to a Principal object
+    const sellerPrincipalObject = Principal.fromText(sellerPrincipal);
+
+    // Call the backend actor with the Principal object
+    const products = await product_actor.getProductsBySeller(sellerPrincipalObject);
+    
+    // Convert Uint8Array back to Base64 string for each product's image
+    const productsWithImages = await Promise.all(products.map(async (product) => {
+      const productImageBase64 = await convertUint8ArrayToBase64(product.productImage);
+      
+      return {
+        ...product,
+        productImage: productImageBase64
+      };
+    }));
+
+    return productsWithImages;
+  } catch (error) {
+    console.error('Error fetching products by seller:', error);
+    throw error;
+  }
+};
+
 // Helper function to convert Uint8Array to Base64
 const convertUint8ArrayToBase64 = (uint8Array) => {
   return new Promise((resolve, reject) => {
@@ -82,30 +151,6 @@ const convertUint8ArrayToBase64 = (uint8Array) => {
     }
   });
 };
-
-export const getProductsBySeller = async (sellerName) => {
-  try {
-    const products = await product_actor.getProductsBySeller(sellerName);
-
-    // Convert Uint8Array back to a Base64 string for each product's image
-    const productsWithImages = await Promise.all(products.map(async (product) => {
-      const productImageBase64 = await convertUint8ArrayToBase64(product.productImage);
-
-      return {
-        ...product,
-        productImage: productImageBase64,
-      };
-    }));
-
-    return productsWithImages;
-  } catch (error) {
-    console.error('Error fetching products by seller:', error);
-    throw error;
-  }
-};
-
-
-
 
 export const deposit = async (amount, currency) => {
   try {

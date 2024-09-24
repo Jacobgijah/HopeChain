@@ -4,9 +4,9 @@ import type { IDL } from '@dfinity/candid';
 
 export interface Product {
   'id' : ProductID,
+  'sellerPrincipal' : Principal,
   'inventory' : bigint,
   'productName' : string,
-  'sellerName' : string,
   'shortDescription' : string,
   'currency' : string,
   'category' : string,
@@ -16,12 +16,12 @@ export interface Product {
   'dateAdded' : string,
 }
 export type ProductID = bigint;
-export interface User { 'id' : UserID, 'name' : string }
+export interface User { 'id' : UserID, 'principal' : Principal }
 export type UserID = bigint;
 export interface _SERVICE {
   'addProduct' : ActorMethod<
     [
-      string,
+      Principal,
       string,
       string,
       string,
@@ -36,11 +36,11 @@ export interface _SERVICE {
   >,
   'deposit' : ActorMethod<[number, string], number>,
   'getProducts' : ActorMethod<[], Array<Product>>,
-  'getProductsBySeller' : ActorMethod<[string], Array<Product>>,
+  'getProductsBySeller' : ActorMethod<[Principal], Array<Product>>,
   'getTotalCharityAmount' : ActorMethod<[], number>,
   'getTotalPrice' : ActorMethod<[], number>,
-  'getUser' : ActorMethod<[string], [] | [User]>,
-  'registerUser' : ActorMethod<[string], [] | [User]>,
+  'getUser' : ActorMethod<[Principal], [] | [User]>,
+  'registerUser' : ActorMethod<[Principal], [] | [User]>,
 }
 export declare const idlFactory: IDL.InterfaceFactory;
 export declare const init: (args: { IDL: typeof IDL }) => IDL.Type[];

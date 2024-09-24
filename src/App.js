@@ -77,7 +77,7 @@ function App() {
           <Route path="/product/:productId" element={<Product />} /> 
           <Route path="/charity" element={<CharityProfile />} /> 
           <Route path="/privacyPolicy" element={<PrivacyPolicy />} /> 
-          <Route path='/cart' element={<Cart />} />
+          <Route path='/cart' element={<Cart userPrincipal={userPrincipal} />} />
           <Route path='/login' element={<Login onLogin={handleLogin} />} />
           <Route path='/signup' element={<LoginSignup />} />
           <Route path='/seller' element={<Seller userName={userPrincipal} />} />
