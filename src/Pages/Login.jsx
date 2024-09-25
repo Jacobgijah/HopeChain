@@ -4,7 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLock } from '@fortawesome/free-solid-svg-icons'; // Import your desired icon
 
-const Login = ({ onLogin }) => {
+const Login = ({ onLogin, errorMessage }) => {
   // eslint-disable-next-line
   const navigate = useNavigate();
   const [isChecked, setIsChecked] = useState(false);
@@ -13,8 +13,12 @@ const Login = ({ onLogin }) => {
     setIsChecked(event.target.checked);
   };
 
-  const handleLogin = () => {
-    onLogin(); // Trigger the Internet Identity login
+  const handleLogin = async () => {
+    try {
+      await onLogin(); // Trigger the Internet Identity login
+    } catch (error) {
+      console.error('Login error:', error); // Log the error for debugging
+    }
   };
 
   return (
@@ -24,6 +28,7 @@ const Login = ({ onLogin }) => {
           <FontAwesomeIcon icon={faLock} style={{ marginRight: '8px' }} />
           Authenticate
         </h1>
+        {errorMessage && <div className="error-message">{errorMessage}</div>} {/* Display error message */}
         <button
           onClick={handleLogin}
           style={{

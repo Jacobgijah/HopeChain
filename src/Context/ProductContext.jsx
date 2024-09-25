@@ -1,9 +1,9 @@
 import React, { createContext, useState, useEffect } from 'react';
-import { getProducts } from '../ic/productService';
+import { actorBackend } from '../backendImports/api';
 
 export const ProductContext = createContext(null);
 
-export const ProductProvider = ({ children, userPrincipal }) => { // Accept userPrincipal as a prop
+export const ProductProvider = ({ children }) => { // Accept userPrincipal as a prop
   const [allProducts, setAllProducts] = useState([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
   const [productError, setProductError] = useState(null);
@@ -11,7 +11,7 @@ export const ProductProvider = ({ children, userPrincipal }) => { // Accept user
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const products = await getProducts(userPrincipal); // Pass the user's principal
+        const products = await actorBackend.getAllProductTypes(); // Pass the user's principal
         setAllProducts(products);
       } catch (error) {
         setProductError(error);
@@ -21,7 +21,7 @@ export const ProductProvider = ({ children, userPrincipal }) => { // Accept user
     };
 
     fetchProducts();
-  }, [userPrincipal]);
+  }, []);
 
   return (
     <ProductContext.Provider value={{ allProducts, loadingProducts, productError }}>
