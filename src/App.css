@@ -7,6 +7,62 @@
   pointer-events: none;
 }
 
+.error-message {
+  color: red; /* Change the color to your preference */
+  padding: 10px;
+  text-align: center;
+}
+
+.success-message {
+  color: green;
+  background-color: #d4edda; /* Light green background */
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #c3e6cb; /* Darker green border */
+  border-radius: 5px;
+  text-align: center;
+}
+
+.logout-message {
+  color: green; /* Change color as desired */
+  text-align: center; /* Center the message */
+  margin: 10px 0; /* Add some margin */
+  animation: fadeIn 0.5s, fadeOut 0.5s 2.5s; /* Fade in and fade out animation */
+}
+
+.loading-spinner {
+  border: 16px solid #f3f3f3; /* Light grey */
+  border-top: 16px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 60px; /* Spinner width */
+  height: 60px; /* Spinner height */
+  animation: spin 1s linear infinite; /* Spin animation */
+  margin: 20px auto; /* Center the spinner */
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;

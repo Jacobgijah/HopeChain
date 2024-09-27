@@ -4,7 +4,7 @@ import { ProductContext } from '../../Context/ProductContext';
 import Item from '../Item/Item';
 
 const Popular = () => {
-  const { allProducts, loadingProducts, productError } = useContext(ProductContext);
+  const { allProducts, loadingProducts, productError, loggedInUserPrincipal } = useContext(ProductContext);
 
   if (loadingProducts) {
     return <div className='product-loading'>Loading...</div>;
@@ -14,9 +14,9 @@ const Popular = () => {
     return <div>Error loading products: {productError.message}</div>;
   }
 
-  // Filter products to only include those with category "TE" and limit to 4 products
+  // Filter products to exclude those added by the logged-in user and include only category "Textiles"
   const filteredProducts = allProducts
-    .filter(product => product.category === 'Textiles')
+    .filter(product => product.category === 'Textiles' && product.sellerPrincipal !== loggedInUserPrincipal)
     .slice(0, 4);
 
   return (

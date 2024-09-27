@@ -6,7 +6,7 @@ import { deposit, getTotalCharityAmount } from '../../ic/productService';
 import Popup from './Popup';
 import { useNavigate } from 'react-router-dom';
 
-const CartItems = () => {
+const CartItems = ({ isAuthenticated, userPrincipal }) => {  // Receive authentication status and user principal as props
   const { allProducts = [], cartItems, removeFromCart, currency, convertPrice, resetCart } = useContext(ShopContext);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('USD');
   const [convertedTotal, setConvertedTotal] = useState(0);
@@ -15,9 +15,6 @@ const CartItems = () => {
   // eslint-disable-next-line
   const [charityAmount, setCharityAmount] = useState(0);
   const navigate = useNavigate();
-
-  // Check if the user is authenticated via Internet Identity
-  const isAuthenticated = Boolean(window.ic?.identity); // Check for Internet Identity
 
   const conversionRates = useMemo(() => ({
     USD: 1,
@@ -67,7 +64,7 @@ const CartItems = () => {
   };
 
   const handleProceedToPurchase = async () => {
-    if (!isAuthenticated) {
+    if (!userPrincipal) { // Check for authentication using userPrincipal
       navigate('/login');
       return;
     }

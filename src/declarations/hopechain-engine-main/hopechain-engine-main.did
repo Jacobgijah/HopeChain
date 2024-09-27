@@ -1,0 +1,137 @@
+type User__1 = 
+ record {
+   buyersCart: vec Product;
+   "principal": principal;
+   purchases: vec Transaction;
+   sellersStock: vec Product;
+   soldItems: vec Transaction;
+   wallet: vec Price;
+ };
+type User = 
+ service {
+   addToCart: (Product) -> ();
+   addToPurchases: (Transaction) -> ();
+   addToSoldItems: (Transaction) -> ();
+   addToWallet: (Price) -> ();
+   clearCart: () -> ();
+   getBuyersCart: () -> (vec Product) query;
+   getPrincipal: () -> (principal) query;
+   getPurchases: () -> (vec Transaction) query;
+   getSellersStock: () -> (vec Product) query;
+   getSoldItems: () -> (vec Transaction) query;
+   getWallet: () -> (vec Price) query;
+   listItem: (Product) -> ();
+   removeFromCart: (nat) -> ();
+   setBuyersCart: (vec Product) -> ();
+   setPrincipal: (principal) -> ();
+   setPurchases: (vec Transaction) -> ();
+   setSellesStock: (vec Product) -> ();
+   setSoldItems: (vec Transaction) -> ();
+   setWallet: (vec Price) -> ();
+   takeFromWallet: (Price) -> (Result);
+ };
+type Transaction__1 = 
+ service {
+   getBuyerID: () -> (principal) query;
+   getID: () -> (nat) query;
+   getPaidPrice: () -> (Price) query;
+   getProductID: () -> (nat) query;
+   setBuyerID: (principal) -> ();
+   setPaidPrice: (Price) -> ();
+   setProductID: (nat) -> ();
+ };
+type Transaction = 
+ record {
+   buyerID: principal;
+   id: nat;
+   paidPrice: Price;
+   productID: nat;
+ };
+type Result_1 = 
+ variant {
+   err: text;
+   ok: Product__1;
+ };
+type Result = 
+ variant {
+   err: text;
+   ok;
+ };
+type Product__1 = 
+ service {
+   getCategory: () -> (text) query;
+   getIsSold: () -> (bool) query;
+   getIsVisible: () -> (bool) query;
+   getLongDesc: () -> (text) query;
+   getName: () -> (text) query;
+   getPicture: () -> (text) query;
+   getPrice: () -> (Price) query;
+   getProductID: () -> (nat) query;
+   getSellerID: () -> (principal) query;
+   getShortDesc: () -> (text) query;
+   setCategory: (text) -> ();
+   setIsVisible: (bool) -> ();
+   setLongDesc: (text) -> ();
+   setName: (text) -> ();
+   setPicture: (text) -> ();
+   setPrice: (Price) -> ();
+   setProductID: (nat) -> () query;
+   setShortDesc: (text) -> ();
+   updateStatus: () -> ();
+ };
+type Product = 
+ record {
+   isSold: bool;
+   isVisible: bool;
+   name: text;
+   productCategory: text;
+   productID: nat;
+   productLongDesc: text;
+   productPicture: text;
+   productPrice: Price;
+   productShortDesc: text;
+   sellerID: principal;
+ };
+type Price = 
+ record {
+   amount: nat;
+   currency: Currency;
+ };
+type Main = 
+ service {
+   addToCart: (principal, nat) -> (bool);
+   addToUserCart: (principal, Product) -> (bool);
+   clearDB: () -> ();
+   clearUserCart: (principal) -> (bool);
+   convertProductToType: (Product__1) -> (Product);
+   convertTransactionToType: (Transaction__1) -> (Transaction);
+   convertUserToType: (User) -> (User__1);
+   createProduct: (principal, text, text, Price, text, text, bool, text) ->
+    (Product__1);
+   createTransaction: (nat, principal, Price) -> (Transaction__1);
+   createUser: (principal) -> (User);
+   editProduct: (nat, principal, text, text, Price, text, text, bool) ->
+    (Result);
+   getAllProductTypes: () -> (vec Product);
+   getAllProductTypesFromObjectArray: (vec Product__1) -> (vec Product);
+   getAllProducts: () -> (vec Product__1) query;
+   getAllTransactionTypes: () -> (vec Transaction);
+   getAllTransactionTypesFromObjectArray: (vec Transaction__1) ->
+    (vec Transaction);
+   getAllTransactions: () -> (vec Transaction__1) query;
+   getAllUserPrincipals: () -> (vec principal);
+   getAllUsers: () -> (vec User) query;
+   getAllUsersTypes: () -> (vec User__1);
+   getAllUsersTypesFromObjectArray: (vec User) -> (vec User__1);
+   getProductById: (nat) -> (Result_1);
+   getUserByPrincipal: (principal) -> (opt User);
+   getUserCartCount: (principal) -> (nat);
+   getUserCartProductTypes: (principal) -> (vec Product);
+   isInCart: (principal, nat) -> (bool);
+   loginUser: (principal) -> (opt User);
+   purchase: (principal, nat) -> (Result);
+   removeFromCart: (principal, nat) -> (bool);
+   removeFromUserCart: (principal, nat) -> (bool);
+ };
+type Currency = variant {icp;};
+service : () -> Main
