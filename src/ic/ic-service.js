@@ -1,6 +1,6 @@
 import { Actor, HttpAgent } from '@dfinity/agent';
 import { idlFactory as hopechain_engine_idl } from '../declarations/hopechain-engine-backend/hopechain-engine-backend.did.js';
-// import { Principal } from '@dfinity/principal';
+import { Principal } from '@dfinity/principal';
 
 const agent = new HttpAgent({ host: "http://127.0.0.1:4943" });
 agent.fetchRootKey(); 
@@ -23,14 +23,16 @@ console.log("Available methods:", Object.keys(hopechain_engine));
 //   return principal;
 // };
 
-export const registerUser = async () => {
+export const registerUser = async (principal) => {
   try {
-    const principal = localStorage.getItem('userPrincipal');
     if (!principal) {
       throw new Error('User not authenticated');
     }
 
-    const user = await hopechain_engine.registerUser(principal);
+    // Ensure the principal is a valid Principal type
+    const principalText = Principal.fromText(principal); // Convert the string to Principal
+    
+    const user = await hopechain_engine.registerUser(principalText);
     if (user) {
       console.log('User registered:', user);
       return user;
@@ -43,6 +45,7 @@ export const registerUser = async () => {
     throw error;
   }
 };
+
 
 export const getUser = async () => {
   try {

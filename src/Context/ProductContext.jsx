@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
-import { actorBackend } from '../backendImports/api';
+import { getProducts } from '../ic/productService';
 
 export const ProductContext = createContext(null);
 
@@ -11,7 +11,7 @@ export const ProductProvider = ({ children }) => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const products = await actorBackend.getAllProductTypes(); 
+        const products = await getProducts(); 
         setAllProducts(products);
       } catch (error) {
         setProductError(error);
