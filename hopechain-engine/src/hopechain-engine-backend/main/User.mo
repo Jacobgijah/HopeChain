@@ -14,7 +14,6 @@ actor class User (
   soldItems : [Types.Transaction],
   wallet : [Types.Price],
 ) {
-
   stable var userPrincipal : Principal = principal;
   stable var userBuyersCart : [Types.Product] = buyersCart;
   stable var userSellersStock : [Types.Product] = sellersStock;
@@ -28,10 +27,18 @@ actor class User (
   var soldItemsBuffer = Buffer.fromArray<Types.Transaction>(userSoldItems);
   var _walletBuffer = Buffer.fromArray<Types.Price>(userWallet);
 
+  // New debug statements to ensure each section is reached
+  Debug.print("User actor initialized with Principal: " # Principal.toText(principal));
+  Debug.print("Buyers Cart initialized with " # debug_show(buyersCart.size()) # " items.");
+  Debug.print("Sellers Stock initialized with " # debug_show(sellersStock.size()) # " items.");
+  Debug.print("Purchases initialized with " # debug_show(purchases.size()) # " transactions.");
+  Debug.print("Sold Items initialized with " # debug_show(soldItems.size()) # " transactions.");
+  Debug.print("Wallet initialized with " # debug_show(wallet.size()) # " entries.");
+
   public query func getPrincipal() : async Principal {
     return userPrincipal;
   };
-
+  
   public query func getSellersStock() : async [Types.Product] {
     return userSellersStock;
   };

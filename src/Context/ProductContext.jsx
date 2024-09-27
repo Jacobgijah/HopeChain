@@ -3,7 +3,7 @@ import { actorBackend } from '../backendImports/api';
 
 export const ProductContext = createContext(null);
 
-export const ProductProvider = ({ children }) => { // Accept userPrincipal as a prop
+export const ProductProvider = ({ children }) => {
   const [allProducts, setAllProducts] = useState([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
   const [productError, setProductError] = useState(null);
@@ -11,7 +11,7 @@ export const ProductProvider = ({ children }) => { // Accept userPrincipal as a 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const products = await actorBackend.getAllProductTypes(); // Pass the user's principal
+        const products = await actorBackend.getAllProductTypes(); 
         setAllProducts(products);
       } catch (error) {
         setProductError(error);
