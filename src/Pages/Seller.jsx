@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { getProductsBySeller } from '../ic/productService';
-import { actorBackend } from '../backendImports/api';
+import { addProduct, getProductsBySeller } from '../ic/productService';
+// import { actorBackend } from '../backendImports/api';
 import './CSS/Seller.css';
 
 const SellerMode = ({ userName }) => {
@@ -87,7 +87,7 @@ const SellerMode = ({ userName }) => {
 
     try {
       // Add the product to the backend
-      await actorBackend.createProduct(newProduct);
+      await addProduct(newProduct);
 
       // Update local state (optional if you want to display it immediately)
       if (editIndex !== null) {

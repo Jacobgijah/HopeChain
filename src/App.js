@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './App.css';
 import Navbar from './Components/Navbar/Navbar';
 import { Routes, Route, useNavigate } from 'react-router-dom';
@@ -18,9 +18,7 @@ import CharityProfile from './Pages/CharityProfile';
 import PrivacyPolicy from './Pages/PrivacyPolicy';
 import { ProductProvider } from './Context/ProductContext';
 import { AuthClient } from '@dfinity/auth-client';
-import { actorBackend } from './backendImports/api'; // Import the Motoko backend actor
-import { Principal } from "@dfinity/principal"; // Import Principal to convert
-
+import { loginUser } from "./ic/ic-service";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -29,8 +27,23 @@ function App() {
   const [loginLoading, setLoginLoading] = useState(false); 
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const [logoutMessage, setLogoutMessage] = useState('');
   const navigate = useNavigate();
+
+  const loginOrCreateUser = useCallback(async (principal) => {
+    try {
+      if (!principal) {
+        throw new Error("Principal is empty or invalid.");
+      }
+
+      const user = await loginUser(principal);
+      
+      console.log("Logged in or created user:", user);
+      showSuccessMessage('User authenticated and stored in backend.');
+    } catch (error) {
+      console.error("Backend user login/creation error:", error);
+      showErrorMessage(`Failed to authenticate user with backend: ${error.message || 'unknown error'}`);
+    }
+  }, []); // Add any dependencies if needed
 
   useEffect(() => {
     const checkAuthentication = async () => {
@@ -42,34 +55,23 @@ function App() {
         setUserPrincipal(principal);
         localStorage.setItem('userPrincipal', principal);
 
-        // Call the backend to store or verify the user
-        await loginOrCreateUser(principal); // Call the backend
+        await loginOrCreateUser(principal);
       } else {
         localStorage.removeItem('userPrincipal');
       }
       setLoading(false);
     };
     checkAuthentication();
-  }, []);
+  }, [loginOrCreateUser]); // Keep loginOrCreateUser as a dependency
 
-  const loginOrCreateUser = async (principal) => {
-    try {
-      // Convert the principalText (string) to a Principal type
-      const principalText = Principal.fromText(principal);
+  const showErrorMessage = (message) => {
+    setErrorMessage(message);
+    setTimeout(() => setErrorMessage(''), 3000); // Clear message after 3 seconds
+  };
 
-      // Call Motoko backend's loginUser function
-      const user = await actorBackend.loginUser(principalText);
-      
-      console.log("Logged in or created user:", user);
-      setSuccessMessage('User authenticated and stored in backend.');
-    } catch (error) {
-      console.error("Backend user login/creation error:", error);
-      if (error.message) {
-        setErrorMessage(`Failed to authenticate user with backend: ${error.message}`);
-      } else {
-        setErrorMessage('Failed to authenticate user with backend due to unknown error.');
-      }
-    }
+  const showSuccessMessage = (message) => {
+    setSuccessMessage(message);
+    setTimeout(() => setSuccessMessage(''), 3000); // Clear message after 3 seconds
   };
 
   const handleLogin = async () => {
@@ -85,14 +87,13 @@ function App() {
           setUserPrincipal(principal);
           localStorage.setItem('userPrincipal', principal);
           
-          // Store or login the user in the backend after authentication
           await loginOrCreateUser(principal);
-          setSuccessMessage('Successfully logged in!');
+          showSuccessMessage('Successfully logged in!');
           navigate('/');
         },
       });
     } catch (error) {
-      setErrorMessage('Failed to authenticate. Please try again.');
+      showErrorMessage('Failed to authenticate. Please try again.');
       console.error('Authentication error:', error);
     } finally {
       setLoginLoading(false);
@@ -105,7 +106,7 @@ function App() {
     setIsAuthenticated(false);
     setUserPrincipal('');
     localStorage.removeItem('userPrincipal');
-    setLogoutMessage('Successfully logged out!');
+    showSuccessMessage('Successfully logged out!');
     navigate('/login');
   };
 
@@ -123,7 +124,6 @@ function App() {
         />
         {errorMessage && <div className="error-message">{errorMessage}</div>}
         {successMessage && <div className="success-message">{successMessage}</div>}
-        {logoutMessage && <div className="logout-message">{logoutMessage}</div>}
         {loginLoading && <div className="loading-spinner"></div>}
         <Routes>
           <Route path='/' element={<Shop />} />
