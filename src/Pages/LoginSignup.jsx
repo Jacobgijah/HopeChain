@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './CSS/LoginSignup.css';
-import { registerUser } from '../ic/ic-service';
+import { loginUser } from '../ic/ic-service';
 import { Link, useNavigate } from 'react-router-dom';
 
 const LoginSignup = () => {
@@ -31,7 +31,7 @@ const LoginSignup = () => {
     }
 
     try {
-      const user = await registerUser(name);
+      const user = await loginUser(name);
       if (user) {
         setSuccess('Registration successful! Redirecting to login...');
         setTimeout(() => navigate('/login'), 2000); // Redirect to login page after 2 seconds

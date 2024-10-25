@@ -18,7 +18,7 @@ import CharityProfile from './Pages/CharityProfile';
 import PrivacyPolicy from './Pages/PrivacyPolicy';
 import { ProductProvider } from './Context/ProductContext';
 import { AuthClient } from '@dfinity/auth-client';
-import { registerUser } from "./ic/ic-service";
+import { loginUser } from "./ic/ic-service";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -35,7 +35,7 @@ function App() {
         throw new Error("Principal is empty or invalid.");
       }
 
-      const user = await registerUser(principal);
+      const user = await loginUser(principal);
       
       console.log("Logged in or created user:", user);
       showSuccessMessage('User authenticated and stored in backend.');
